@@ -1,5 +1,6 @@
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTimer } from '../../context/TimerContext';
+import CustomButton from '@/components/CustomButton';
 
 function formatTime(seconds: number): string {
   const min = Math.floor(seconds / 60);
@@ -14,14 +15,19 @@ export default function TimerScreen() {
     <View style={styles.container}>
       <Text style={styles.mode}>{mode.toUpperCase()}</Text>
       <Text style={styles.time}>{formatTime(timeLeft)}</Text>
-      <View style={styles.buttons}>
-        <Button title={isRunning ? 'Pause' : 'Start'} onPress={isRunning ? pauseTimer : startTimer} />
-        <Button title="Reset" onPress={resetTimer} />
+
+      <View style={styles.buttonGroup}>
+        <CustomButton
+          name={isRunning ? 'Durdur' : 'Başlat'}
+          onPress={isRunning ? pauseTimer : startTimer}
+        />
+        <CustomButton name="Sıfırla" onPress={resetTimer} />
       </View>
-      <View style={styles.buttons}>
-        <Button title="Work" onPress={() => switchMode('work')} />
-        <Button title="Short Break" onPress={() => switchMode('shortBreak')} />
-        <Button title="Long Break" onPress={() => switchMode('longBreak')} />
+
+      <View style={styles.buttonGroup}>
+        <CustomButton name="Çalışma Modu" onPress={() => switchMode('work')} />
+        <CustomButton name="Kısa Mola" onPress={() => switchMode('shortBreak')} />
+        <CustomButton name="Uzun Mola" onPress={() => switchMode('longBreak')} />
       </View>
     </View>
   );
@@ -31,5 +37,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   time: { fontSize: 64, fontWeight: 'bold', marginBottom: 20 },
   mode: { fontSize: 24, marginBottom: 10 },
-  buttons: { flexDirection: 'row', gap: 10, marginTop: 20 },
+  buttonGroup: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',       
+  justifyContent: 'center',
+  gap: 10,
+  marginTop: 20,
+}
+
 });
