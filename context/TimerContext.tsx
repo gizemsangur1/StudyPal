@@ -10,34 +10,45 @@ interface TimerContextProps {
   pauseTimer: () => void;
   resetTimer: () => void;
   switchMode: (newMode: TimerMode) => void;
+  totalWorkSeconds: number;
 }
 
 const TimerContext = createContext<TimerContextProps | undefined>(undefined);
 
 export const TimerProvider = ({ children }: { children: React.ReactNode }) => {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); 
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [mode, setMode] = useState<TimerMode>('work');
+  const [totalWorkSeconds, setTotalWorkSeconds] = useState(0);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
+
     if (isRunning) {
       interval = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
             clearInterval(interval);
             setIsRunning(false);
+
+            if (mode === 'work') {
+              setTotalWorkSeconds((prevTime) => prevTime + 25 * 60);
+            }
+
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
     }
+
     return () => clearInterval(interval);
   }, [isRunning]);
 
   const startTimer = () => setIsRunning(true);
+
   const pauseTimer = () => setIsRunning(false);
+
   const resetTimer = () => {
     setIsRunning(false);
     switch (mode) {
@@ -71,7 +82,16 @@ export const TimerProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <TimerContext.Provider
-      value={{ timeLeft, isRunning, mode, startTimer, pauseTimer, resetTimer, switchMode }}
+      value={{
+        timeLeft,
+        isRunning,
+        mode,
+        startTimer,
+        pauseTimer,
+        resetTimer,
+        switchMode,
+        totalWorkSeconds, 
+      }}
     >
       {children}
     </TimerContext.Provider>
