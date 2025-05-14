@@ -3,11 +3,12 @@ import { useRouter } from 'expo-router';
 
 interface CustomButtonProps {
   name: string;
-  path?: string; 
-  onPress?: () => void; 
-  buttonStyle?: ViewStyle;
-  textStyle?: TextStyle;
+  path?: string;
+  onPress?: () => void;
+  buttonStyle?: ViewStyle | ViewStyle[];
+  textStyle?: TextStyle | TextStyle[];
 }
+
 
 export default function CustomButton({
   name,
