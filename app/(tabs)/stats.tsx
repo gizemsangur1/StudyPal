@@ -4,6 +4,7 @@ import { LineChart } from "react-native-chart-kit";
 import { useTimer } from "@/context/TimerContext";
 import CustomButton from "@/components/CustomButton";
 import ConfettiCannon from "react-native-confetti-cannon";
+import { exportWorkLogAsCSV } from "@/hooks/exportWorkLogAsCSV";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -19,9 +20,13 @@ function getWeekDates(): string[] {
 }
 
 export default function StatsScreen() {
-  const { workLog } = useTimer();
+  const {
+    workLog,
+    dailyGoalMinutes,
+    setDailyGoalMinutes,
+  } = useTimer();
+
   const [mode, setMode] = useState<"daily" | "weekly">("weekly");
-  const [dailyGoalMinutes, setDailyGoalMinutes] = useState(120);
   const [input, setInput] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -61,7 +66,7 @@ export default function StatsScreen() {
   useEffect(() => {
     if (todayProgressPercent >= 100 && !showConfetti) {
       setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 4000); 
+      setTimeout(() => setShowConfetti(false), 4000);
     }
   }, [todayProgressPercent]);
 
@@ -70,6 +75,7 @@ export default function StatsScreen() {
       <Text style={styles.title}>
         {mode === "weekly" ? "Haftalık" : "Günlük"} İstatistikler
       </Text>
+
       <View style={styles.goalInputSection}>
         <Text style={styles.inputLabel}>Günlük hedef (dakika):</Text>
         <View style={styles.inputRow}>
@@ -83,6 +89,7 @@ export default function StatsScreen() {
           <CustomButton name="Kaydet" onPress={updateGoal} />
         </View>
       </View>
+
       <View style={styles.goalContainer}>
         <Text style={styles.progressLabel}>
           Bugün: {Math.floor(todaySeconds / 60)} dk / {dailyGoalMinutes} dk (
@@ -94,6 +101,7 @@ export default function StatsScreen() {
           />
         </View>
       </View>
+
       <View style={styles.buttonRow}>
         <CustomButton
           name="Günlük"
@@ -121,7 +129,6 @@ export default function StatsScreen() {
         />
       </View>
 
-      {/* Grafik */}
       <LineChart
         data={chartData}
         width={screenWidth - 40}
@@ -138,7 +145,6 @@ export default function StatsScreen() {
         style={styles.chart}
       />
 
-      {/* Konfeti 🎉 */}
       {showConfetti && (
         <ConfettiCannon
           count={100}
@@ -148,6 +154,11 @@ export default function StatsScreen() {
           fallSpeed={2500}
         />
       )}
+
+      <CustomButton
+        name="CSV Dışa Aktar"
+        onPress={() => exportWorkLogAsCSV(workLog)}
+      />
     </View>
   );
 }

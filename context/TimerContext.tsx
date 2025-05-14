@@ -17,11 +17,14 @@ interface TimerContextProps {
   switchMode: (newMode: TimerMode) => void;
   totalWorkSeconds: number;
   workLog: WorkLog;
+  dailyGoalMinutes: number;
+  setDailyGoalMinutes: (minutes: number) => void;
 }
 
 const TimerContext = createContext<TimerContextProps | undefined>(undefined);
 
 const WORK_LOG_STORAGE_KEY = "@studypal_worklog";
+const GOAL_STORAGE_KEY = "@studypal_goal_minutes";
 
 export const TimerProvider = ({ children }: { children: React.ReactNode }) => {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
@@ -29,24 +32,23 @@ export const TimerProvider = ({ children }: { children: React.ReactNode }) => {
   const [mode, setMode] = useState<TimerMode>("work");
   const [totalWorkSeconds, setTotalWorkSeconds] = useState(0);
   const [workLog, setWorkLog] = useState<WorkLog>({});
+  const [dailyGoalMinutes, setDailyGoalMinutesState] = useState(120);
 
-  // Uygulama başlarken workLog'u yükle
   useEffect(() => {
-    const loadWorkLog = async () => {
+    const loadData = async () => {
       try {
-        const stored = await AsyncStorage.getItem(WORK_LOG_STORAGE_KEY);
-        if (stored) {
-          setWorkLog(JSON.parse(stored));
-        }
+        const storedLog = await AsyncStorage.getItem(WORK_LOG_STORAGE_KEY);
+        if (storedLog) setWorkLog(JSON.parse(storedLog));
+
+        const storedGoal = await AsyncStorage.getItem(GOAL_STORAGE_KEY);
+        if (storedGoal) setDailyGoalMinutesState(parseInt(storedGoal));
       } catch (err) {
-        console.error("WorkLog yüklenemedi:", err);
+        console.error("Veri yüklenemedi:", err);
       }
     };
-
-    loadWorkLog();
+    loadData();
   }, []);
 
-  // workLog her değiştiğinde kaydet
   useEffect(() => {
     const saveWorkLog = async () => {
       try {
@@ -55,9 +57,19 @@ export const TimerProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("WorkLog kaydedilemedi:", err);
       }
     };
-
     saveWorkLog();
   }, [workLog]);
+
+  useEffect(() => {
+    const saveGoal = async () => {
+      try {
+        await AsyncStorage.setItem(GOAL_STORAGE_KEY, dailyGoalMinutes.toString());
+      } catch (err) {
+        console.error("Günlük hedef kaydedilemedi:", err);
+      }
+    };
+    saveGoal();
+  }, [dailyGoalMinutes]);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -89,7 +101,6 @@ export const TimerProvider = ({ children }: { children: React.ReactNode }) => {
   }, [isRunning]);
 
   const startTimer = () => setIsRunning(true);
-
   const pauseTimer = () => setIsRunning(false);
 
   const resetTimer = () => {
@@ -123,6 +134,10 @@ export const TimerProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const setDailyGoalMinutes = (minutes: number) => {
+    setDailyGoalMinutesState(minutes);
+  };
+
   return (
     <TimerContext.Provider
       value={{
@@ -135,6 +150,8 @@ export const TimerProvider = ({ children }: { children: React.ReactNode }) => {
         switchMode,
         totalWorkSeconds,
         workLog,
+        dailyGoalMinutes,
+        setDailyGoalMinutes,
       }}
     >
       {children}
