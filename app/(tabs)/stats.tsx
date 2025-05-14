@@ -5,6 +5,7 @@ import { useTimer } from "@/context/TimerContext";
 import CustomButton from "@/components/CustomButton";
 import ConfettiCannon from "react-native-confetti-cannon";
 import { exportWorkLogAsCSV } from "@/hooks/exportWorkLogAsCSV";
+import { useTheme } from "@/context/ThemeContext";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -20,15 +21,12 @@ function getWeekDates(): string[] {
 }
 
 export default function StatsScreen() {
-  const {
-    workLog,
-    dailyGoalMinutes,
-    setDailyGoalMinutes,
-  } = useTimer();
+  const { workLog, dailyGoalMinutes, setDailyGoalMinutes } = useTimer();
 
   const [mode, setMode] = useState<"daily" | "weekly">("weekly");
   const [input, setInput] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
+  const { theme } = useTheme();
 
   const today = new Date().toISOString().split("T")[0];
   const todaySeconds = workLog[today] || 0;
@@ -71,16 +69,25 @@ export default function StatsScreen() {
   }, [todayProgressPercent]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
+    <View style={{ backgroundColor: theme.background, padding: 8 }}>
+      <Text style={{ color: theme.text, fontWeight: "bold" }}>
         {mode === "weekly" ? "Haftalık" : "Günlük"} İstatistikler
       </Text>
 
       <View style={styles.goalInputSection}>
-        <Text style={styles.inputLabel}>Günlük hedef (dakika):</Text>
+        <Text style={{ color: theme.text, fontWeight: "bold" }}>
+          Günlük hedef (dakika):
+        </Text>
         <View style={styles.inputRow}>
           <TextInput
-            style={styles.input}
+            style={{
+              color: theme.text,
+              flex: 1,
+              borderColor: "#ccc",
+              borderWidth: 1,
+              borderRadius: 8,
+              padding: 10,
+            }}
             keyboardType="numeric"
             placeholder="örn. 120"
             value={input}
@@ -91,7 +98,7 @@ export default function StatsScreen() {
       </View>
 
       <View style={styles.goalContainer}>
-        <Text style={styles.progressLabel}>
+        <Text style={{ color: theme.text, fontWeight: "bold" }}>
           Bugün: {Math.floor(todaySeconds / 60)} dk / {dailyGoalMinutes} dk (
           {todayProgressPercent}%)
         </Text>
@@ -103,30 +110,8 @@ export default function StatsScreen() {
       </View>
 
       <View style={styles.buttonRow}>
-        <CustomButton
-          name="Günlük"
-          onPress={() => setMode("daily")}
-          buttonStyle={[
-            styles.chartButton,
-            ...(mode === "daily" ? [styles.activeButton] : []),
-          ]}
-          textStyle={[
-            styles.chartButtonText,
-            ...(mode === "daily" ? [styles.activeText] : []),
-          ]}
-        />
-        <CustomButton
-          name="Haftalık"
-          onPress={() => setMode("weekly")}
-          buttonStyle={[
-            styles.chartButton,
-            ...(mode === "weekly" ? [styles.activeButton] : []),
-          ]}
-          textStyle={[
-            styles.chartButtonText,
-            ...(mode === "weekly" ? [styles.activeText] : []),
-          ]}
-        />
+        <CustomButton name="Günlük" onPress={() => setMode("daily")} />
+        <CustomButton name="Haftalık" onPress={() => setMode("weekly")} />
       </View>
 
       <LineChart
@@ -138,8 +123,8 @@ export default function StatsScreen() {
           backgroundGradientFrom: "#f0f0f0",
           backgroundGradientTo: "#fff",
           decimalPlaces: 0,
-          color: () => "#9B7EBD",
-          labelColor: () => "#333",
+          color: () => theme.secondary,
+          labelColor: () => theme.secondary,
         }}
         bezier
         style={styles.chart}
@@ -192,7 +177,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: "100%",
-    backgroundColor: "#9B7EBD",
+    backgroundColor: "#213448",
   },
 
   buttonRow: {

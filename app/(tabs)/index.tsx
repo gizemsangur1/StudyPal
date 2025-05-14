@@ -1,18 +1,18 @@
-import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import { View, Text, StyleSheet } from "react-native";
 import CustomButton from "@/components/CustomButton";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const { theme, themeName, setThemeName } = useTheme();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}> StudyPal</Text>
-      <Text style={styles.subtitle}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text style={[styles.title, { color: theme.text }]}>StudyPal</Text>
+      <Text style={[styles.subtitle, { color: theme.text }]}>
         Verimli çalışma asistanına hoş geldin!
       </Text>
 
-      <View style={styles.buttonGroup}>
+      <View style={styles.section}>
         <CustomButton name="Pomodoro Zamanlayıcı" path="/timer" />
         <CustomButton name="Görevlerim" path="/tasks" />
         <CustomButton name="İstatistikler" path="/stats" />
@@ -21,16 +21,31 @@ export default function HomeScreen() {
   );
 }
 
+
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 20,
+    justifyContent: "center",
   },
-  title: { fontSize: 32, fontWeight: "bold", marginBottom: 10 },
-  subtitle: { fontSize: 16, marginBottom: 30, textAlign: "center" },
-  buttonGroup: { gap: 12, width: "100%" },
-  button: { backgroundColor: "#9B7EBD", borderRadius: 50, padding: 10 },
-  text: { color: "white", textAlign: "center" },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  section: {
+    gap: 12,
+    marginBottom: 40,
+  },
+  themeSection: {
+    gap: 10,
+  },
 });

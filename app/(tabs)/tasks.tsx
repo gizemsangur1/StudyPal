@@ -1,21 +1,29 @@
-import { useState } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTasks } from '@/context/TaskContext';
-import CustomButton from '@/components/CustomButton';
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { useTasks } from "@/context/TaskContext";
+import CustomButton from "@/components/CustomButton";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function TasksScreen() {
   const { tasks, addTask, toggleTask } = useTasks();
-  const [input, setInput] = useState('');
-
+  const [input, setInput] = useState("");
+  const { theme } = useTheme();
   const handleAdd = () => {
-    if (input.trim() === '') return;
+    if (input.trim() === "") return;
     addTask(input);
-    setInput('');
+    setInput("");
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Görevlerim</Text>
+    <View style={{ backgroundColor: theme.background, padding: 8,flex: 1 }}>
+      <Text style={{color:theme.text}}>Görevlerim</Text>
 
       <TextInput
         style={styles.input}
@@ -44,10 +52,10 @@ export default function TasksScreen() {
 
 const styles = StyleSheet.create({
   container: { padding: 20, flex: 1 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 16 },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
@@ -55,16 +63,16 @@ const styles = StyleSheet.create({
   task: {
     padding: 12,
     borderBottomWidth: 1,
-    borderColor: '#eee',
+    borderColor: "#eee",
     fontSize: 16,
   },
   completed: {
-    textDecorationLine: 'line-through',
-    color: 'gray',
+    textDecorationLine: "line-through",
+    color: "gray",
   },
   empty: {
     marginTop: 20,
-    textAlign: 'center',
-    color: 'gray',
+    textAlign: "center",
+    color: "gray",
   },
 });
