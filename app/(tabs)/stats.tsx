@@ -1,8 +1,9 @@
 import { View, Text, StyleSheet, Dimensions, TextInput } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LineChart } from "react-native-chart-kit";
 import { useTimer } from "@/context/TimerContext";
 import CustomButton from "@/components/CustomButton";
+import ConfettiCannon from "react-native-confetti-cannon";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -22,6 +23,7 @@ export default function StatsScreen() {
   const [mode, setMode] = useState<"daily" | "weekly">("weekly");
   const [dailyGoalMinutes, setDailyGoalMinutes] = useState(120);
   const [input, setInput] = useState("");
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
   const todaySeconds = workLog[today] || 0;
@@ -55,6 +57,13 @@ export default function StatsScreen() {
       setInput("");
     }
   };
+
+  useEffect(() => {
+    if (todayProgressPercent >= 100 && !showConfetti) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000); 
+    }
+  }, [todayProgressPercent]);
 
   return (
     <View style={styles.container}>
@@ -111,6 +120,8 @@ export default function StatsScreen() {
           ]}
         />
       </View>
+
+      {/* Grafik */}
       <LineChart
         data={chartData}
         width={screenWidth - 40}
@@ -126,6 +137,17 @@ export default function StatsScreen() {
         bezier
         style={styles.chart}
       />
+
+      {/* Konfeti 🎉 */}
+      {showConfetti && (
+        <ConfettiCannon
+          count={100}
+          origin={{ x: screenWidth / 2, y: 0 }}
+          fadeOut
+          explosionSpeed={400}
+          fallSpeed={2500}
+        />
+      )}
     </View>
   );
 }
