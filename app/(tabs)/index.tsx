@@ -1,9 +1,15 @@
-import { View, Text, StyleSheet } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import { useTheme } from "@/context/ThemeContext";
+import { useTimer } from "@/context/TimerContext";
+import { useRouter } from "expo-router"; // Eğer React Navigation kullanıyorsan burayı değiştir
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
-  const { theme, themeName, setThemeName } = useTheme();
+  const { theme } = useTheme();
+  const { workLog } = useTimer();
+  const router = useRouter();
+
+  const streak = calculateStreak(workLog);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -12,6 +18,21 @@ export default function HomeScreen() {
         Verimli çalışma asistanına hoş geldin!
       </Text>
 
+      <TouchableOpacity
+        style={[
+          styles.streakBox,
+          {
+            backgroundColor:theme.background,
+          },
+        ]}
+        onPress={() => router.push("/stats")}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.streakIcon}>🔥</Text>
+        <Text style={[styles.streakText, { color: theme.text }]}>
+          {streak} günlük streak
+        </Text>
+      </TouchableOpacity>
       <View style={styles.section}>
         <CustomButton name="Pomodoro Zamanlayıcı" path="/timer" />
         <CustomButton name="Görevlerim" path="/tasks" />
@@ -21,8 +42,24 @@ export default function HomeScreen() {
   );
 }
 
+function calculateStreak(log: Record<string, number>): number {
+  let streak = 0;
+  const now = new Date();
 
+  for (let i = 0; i < 365; i++) {
+    const day = new Date(now);
+    day.setDate(now.getDate() - i);
+    const dateStr = day.toISOString().split("T")[0];
 
+    if (log[dateStr] && log[dateStr] > 0) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -45,7 +82,19 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 40,
   },
-  themeSection: {
-    gap: 10,
+  streakBox: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+    borderRadius: 16,
+    marginBottom: 24,
+  },
+  streakIcon: {
+    fontSize: 40,
+  },
+  streakText: {
+    marginTop: 8,
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
