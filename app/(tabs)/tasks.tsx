@@ -1,6 +1,7 @@
 import CustomButton from "@/components/CustomButton";
 import { useTasks } from "@/context/TaskContext";
 import { useTheme } from "@/context/ThemeContext";
+import { Ionicons } from "@expo/vector-icons"; // ikon için
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -13,10 +14,11 @@ import {
 } from "react-native";
 
 export default function TasksScreen() {
-  const { tasks, addTask, toggleTask } = useTasks();
+  const { tasks, addTask, toggleTask, deleteTask } = useTasks(); 
   const [input, setInput] = useState("");
-  const { theme } = useTheme();
-    const { t } = useTranslation();
+  const { theme,themeName } = useTheme();
+  const { t } = useTranslation();
+
   const handleAdd = () => {
     if (input.trim() === "") return;
     addTask(input);
@@ -32,7 +34,7 @@ export default function TasksScreen() {
           fontSize: 16,
         }}
       >
-      {t("tasks_title")}
+        {t("tasks_title")}
       </Text>
 
       <TextInput
@@ -49,19 +51,37 @@ export default function TasksScreen() {
         onChangeText={setInput}
         onSubmitEditing={handleAdd}
       />
+
       <CustomButton name={t("add_button")} onPress={handleAdd} />
 
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => toggleTask(item.id)}>
-            <Text style={[styles.task, item.completed && styles.completed,{ color: theme.text }]}>
-              {item.title}
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.taskRow}>
+            <TouchableOpacity
+              onPress={() => toggleTask(item.id)}
+              style={{ flex: 1 }}
+            >
+              <Text
+                style={[
+                  styles.task,
+                  item.completed && styles.completed,
+                  { color: theme.text },
+                ]}
+              >
+                {item.title}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => deleteTask(item.id)}>
+              <Ionicons name="trash-outline" size={20} color={themeName=="light"?"#3D0301":"#EBE8DB" }/>
+            </TouchableOpacity>
+          </View>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>{t("no_tasks_text")}</Text>}
+        ListEmptyComponent={
+          <Text style={styles.empty}>{t("no_tasks_text")}</Text>
+        }
       />
     </View>
   );
@@ -77,11 +97,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 8,
   },
+  taskRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
   task: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderColor: "#eee",
     fontSize: 16,
+    paddingVertical: 8,
   },
   completed: {
     textDecorationLine: "line-through",

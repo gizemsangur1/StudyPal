@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const STORAGE_KEY = '@studypal_tasks';
 
@@ -13,6 +13,7 @@ interface TaskContextProps {
   tasks: Task[];
   addTask: (title: string) => void;
   toggleTask: (id: string) => void;
+  deleteTask: (id: string) => void; 
 }
 
 const TaskContext = createContext<TaskContextProps | undefined>(undefined);
@@ -64,8 +65,12 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
+  const deleteTask = (id: string) => {
+    setTasks((prev) => prev.filter((task) => task.id !== id));
+  };
+
   return (
-    <TaskContext.Provider value={{ tasks, addTask, toggleTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, toggleTask, deleteTask }}>
       {children}
     </TaskContext.Provider>
   );
