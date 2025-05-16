@@ -3,17 +3,18 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const STORAGE_KEY = '@studypal_tasks';
 
-interface Task {
+export interface Task {
   id: string;
   title: string;
   completed: boolean;
+  dueDate?: string; 
 }
 
 interface TaskContextProps {
   tasks: Task[];
-  addTask: (title: string) => void;
+  addTask: (title: string, dueDate?: Date | null) => string;
   toggleTask: (id: string) => void;
-  deleteTask: (id: string) => void; 
+  deleteTask: (id: string) => void;
 }
 
 const TaskContext = createContext<TaskContextProps | undefined>(undefined);
@@ -48,13 +49,16 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     saveTasks();
   }, [tasks]);
 
-  const addTask = (title: string) => {
+  const addTask = (title: string, dueDate?: Date | null): string => {
+    const id = Date.now().toString();
     const newTask: Task = {
-      id: Date.now().toString(),
+      id,
       title,
       completed: false,
+      dueDate: dueDate ? dueDate.toISOString() : undefined,
     };
     setTasks((prev) => [newTask, ...prev]);
+    return id;
   };
 
   const toggleTask = (id: string) => {

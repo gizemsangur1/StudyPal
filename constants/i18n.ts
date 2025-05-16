@@ -41,6 +41,7 @@ const resources = {
         shortBreak: "Kısa Mola",
         longBreak: "Uzun Mola",
       },
+      "ai_generate_plan": "AI ile Günlük Planla",
     },
   },
   en: {
@@ -79,6 +80,7 @@ const resources = {
         shortBreak: "Short Break",
         longBreak: "Long Break",
       },
+       "ai_generate_plan": "Generate Plan with AI"
     },
   },
 };

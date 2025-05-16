@@ -1,4 +1,5 @@
 import "@/constants/i18n";
+import { useNotificationSetup } from "@/context/NotificationProvider";
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
@@ -7,6 +8,8 @@ import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import { TimerProvider } from "../context/TimerContext";
 
 export default function RootLayout() {
+  useNotificationSetup();
+
   return (
     <ThemeProvider>
       <TimerProvider>
@@ -45,10 +48,8 @@ function ThemeToggleButtons() {
   const isLight = themeName === "light";
   const router = useRouter();
   return (
-    <div style={{ margin: 5 }}>
       <TouchableOpacity onPress={() => router.push("/settings")} style={{padding:15}}>
         <Ionicons name="settings-outline" size={24} color={theme.text} />
       </TouchableOpacity>
-    </div>
   );
 }
