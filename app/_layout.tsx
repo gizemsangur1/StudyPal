@@ -1,6 +1,7 @@
-import CustomButton from "@/components/CustomButton";
 import "@/constants/i18n";
+import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from "expo-router";
+import { TouchableOpacity } from "react-native";
 import { TaskProvider } from "../context/TaskContext";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import { TimerProvider } from "../context/TimerContext";
@@ -19,7 +20,6 @@ export default function RootLayout() {
 
 function LayoutWithTheme() {
   const { theme } = useTheme();
- 
 
   return (
     <Stack
@@ -41,16 +41,14 @@ function LayoutWithTheme() {
 }
 
 function ThemeToggleButtons() {
-  const { themeName, setThemeName } = useTheme();
+  const { theme,themeName, setThemeName } = useTheme();
   const isLight = themeName === "light";
-   const router = useRouter();
+  const router = useRouter();
   return (
-    <div style={{margin:5}}>
-      <CustomButton
-        name={isLight ? "🌞" : "🌙"}
-        onPress={() => router.push("/settings")}
-        isActive={true}
-      />
+    <div style={{ margin: 5 }}>
+      <TouchableOpacity onPress={() => router.push("/settings")} style={{padding:15}}>
+        <Ionicons name="settings-outline" size={24} color={theme.text} />
+      </TouchableOpacity>
     </div>
   );
 }

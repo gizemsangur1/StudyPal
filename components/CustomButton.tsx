@@ -1,20 +1,21 @@
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
-} from "react-native";
 import { useRouter } from "expo-router";
+import {
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
 import { useTheme } from "../context/ThemeContext";
 
 interface CustomButtonProps {
-  name: string;
+  name?: string;
   path?: string;
   onPress?: () => void;
   buttonStyle?: ViewStyle | ViewStyle[];
   textStyle?: TextStyle | TextStyle[];
   isActive?: boolean; 
+  icon?: React.ReactNode;
 }
 
 

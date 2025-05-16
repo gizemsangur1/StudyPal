@@ -15,7 +15,7 @@ export default function SettingsScreen() {
       <Text style={[styles.title, { color: theme.text }]}>{t("settings")}</Text>
 
       <View style={styles.optionRow}>
-        <Text style={{ color: theme.text }}>{t("dark_mode")}</Text>
+        <Text style={{ color: theme.text,fontWeight:"bold" }}>{t("dark_mode")}</Text>
         <Switch
           value={themeName === "dark"}
           onValueChange={toggleTheme}
@@ -24,8 +24,8 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.optionRow}>
-        <Text style={{ color: theme.text }}>🌐 {t("language")}</Text>
-        <Text
+        <Text style={{ color: theme.text ,fontWeight:"bold",fontSize:16}}>🌐 {t("language")}</Text>
+        <Text style={{ color: theme.text ,fontWeight:"bold",fontSize:16}}
           onPress={() =>
             i18n.changeLanguage(i18n.language === "tr" ? "en" : "tr")
           }
