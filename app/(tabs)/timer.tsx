@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useTimer } from "../../context/TimerContext";
 import CustomButton from "@/components/CustomButton";
 import { useTheme } from "@/context/ThemeContext";
+import { StyleSheet, Text, View } from "react-native";
+import { useTimer } from "../../context/TimerContext";
 
 function formatTime(seconds: number): string {
   const min = Math.floor(seconds / 60);
@@ -24,8 +24,8 @@ export default function TimerScreen() {
   const { theme } = useTheme();
   return (
     <View style={{ backgroundColor: theme.background, padding: 8 ,flex: 1, justifyContent: "center", alignItems: "center"}}>
-      <Text style={styles.mode}>{mode.toUpperCase()}</Text>
-      <Text style={styles.time}>{formatTime(timeLeft)}</Text>
+      <Text style={{color:theme.text, fontSize: 64, fontWeight: "bold", marginBottom: 20}}>{mode.toUpperCase()}</Text>
+      <Text style={{color:theme.text,fontSize: 24, marginBottom: 10}}>{formatTime(timeLeft)}</Text>
 
       <View style={styles.buttonGroup}>
         <CustomButton

@@ -1,15 +1,15 @@
+import CustomButton from "@/components/CustomButton";
+import { useTasks } from "@/context/TaskContext";
+import { useTheme } from "@/context/ThemeContext";
 import { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
   FlatList,
   StyleSheet,
+  Text,
+  TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { useTasks } from "@/context/TaskContext";
-import CustomButton from "@/components/CustomButton";
-import { useTheme } from "@/context/ThemeContext";
 
 export default function TasksScreen() {
   const { tasks, addTask, toggleTask } = useTasks();
@@ -22,11 +22,26 @@ export default function TasksScreen() {
   };
 
   return (
-    <View style={{ backgroundColor: theme.background, padding: 8,flex: 1 }}>
-      <Text style={{color:theme.text}}>Görevlerim</Text>
+    <View style={{ backgroundColor: theme.background, padding: 8, flex: 1 }}>
+      <Text
+        style={{
+          color: theme.text,
+          padding: 12,
+          fontSize: 16,
+        }}
+      >
+        Görevlerim
+      </Text>
 
       <TextInput
-        style={styles.input}
+        style={{
+          color: theme.text,
+          borderWidth: 1,
+          borderColor: "#ccc",
+          padding: 12,
+          borderRadius: 8,
+          marginBottom: 8,
+        }}
         placeholder="Yeni görev ekle..."
         value={input}
         onChangeText={setInput}
@@ -39,7 +54,7 @@ export default function TasksScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => toggleTask(item.id)}>
-            <Text style={[styles.task, item.completed && styles.completed]}>
+            <Text style={[styles.task, item.completed && styles.completed,{ color: theme.text }]}>
               {item.title}
             </Text>
           </TouchableOpacity>

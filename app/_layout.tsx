@@ -1,8 +1,8 @@
+import CustomButton from "@/components/CustomButton";
 import { Stack } from "expo-router";
-import { TimerProvider } from "../context/TimerContext";
 import { TaskProvider } from "../context/TaskContext";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
-import CustomButton from "@/components/CustomButton";
+import { TimerProvider } from "../context/TimerContext";
 
 export default function RootLayout() {
   return (
@@ -26,7 +26,7 @@ function LayoutWithTheme() {
         headerStyle: {
           backgroundColor: theme.background,
         },
-        headerTitle:"StudyPal",
+        headerTitle: "StudyPal",
         headerTitleStyle: {
           color: theme.text,
           fontSize: 20,
@@ -40,19 +40,14 @@ function LayoutWithTheme() {
 
 function ThemeToggleButtons() {
   const { themeName, setThemeName } = useTheme();
-
+  const isLight = themeName === "light";
   return (
-    <>
+    <div style={{margin:5}}>
       <CustomButton
-        name="🌞"
-        onPress={() => setThemeName("light")}
-        isActive={themeName === "light"}
+        name={isLight ? "🌞" : "🌙"}
+        onPress={() => setThemeName(isLight ? "dark" : "light")}
+        isActive={true}
       />
-      <CustomButton
-        name="🌙"
-        onPress={() => setThemeName("dark")}
-        isActive={themeName === "dark"}
-      />
-    </>
+    </div>
   );
 }
