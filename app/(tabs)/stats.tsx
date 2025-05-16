@@ -1,11 +1,12 @@
-import { View, Text, StyleSheet, Dimensions, TextInput } from "react-native";
-import { useState, useEffect } from "react";
-import { LineChart } from "react-native-chart-kit";
-import { useTimer } from "@/context/TimerContext";
 import CustomButton from "@/components/CustomButton";
-import ConfettiCannon from "react-native-confetti-cannon";
-import { exportWorkLogAsCSV } from "@/hooks/exportWorkLogAsCSV";
 import { useTheme } from "@/context/ThemeContext";
+import { useTimer } from "@/context/TimerContext";
+import { exportWorkLogAsCSV } from "@/hooks/exportWorkLogAsCSV";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Dimensions, StyleSheet, Text, TextInput, View } from "react-native";
+import { LineChart } from "react-native-chart-kit";
+import ConfettiCannon from "react-native-confetti-cannon";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -27,6 +28,7 @@ export default function StatsScreen() {
   const [input, setInput] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const { theme } = useTheme();
+  const { t, i18n } = useTranslation();
 
   const today = new Date().toISOString().split("T")[0];
   const todaySeconds = workLog[today] || 0;
@@ -69,14 +71,16 @@ export default function StatsScreen() {
   }, [todayProgressPercent]);
 
   return (
-    <View style={{ backgroundColor: theme.background, padding: 8 }}>
+    <View
+      style={{ backgroundColor: theme.background, padding: 20, height: "100%" }}
+    >
       <Text style={{ color: theme.text, fontWeight: "bold" }}>
-        {mode === "weekly" ? "Haftalık" : "Günlük"} İstatistikler
+         {mode === "weekly" ? t("weekly_stats") : t("daily_stats")}
       </Text>
 
       <View style={styles.goalInputSection}>
         <Text style={{ color: theme.text, fontWeight: "bold" }}>
-          Günlük hedef (dakika):
+          {t("daily_goal")} :
         </Text>
         <View style={styles.inputRow}>
           <TextInput
@@ -89,18 +93,18 @@ export default function StatsScreen() {
               padding: 10,
             }}
             keyboardType="numeric"
-            placeholder="örn. 120"
+            placeholder={t("goal_placeholder")}
             value={input}
             onChangeText={setInput}
           />
-          <CustomButton name="Kaydet" onPress={updateGoal} />
+          <CustomButton name={t("save")} onPress={updateGoal} />
         </View>
       </View>
 
       <View style={styles.goalContainer}>
         <Text style={{ color: theme.text, fontWeight: "bold" }}>
-          Bugün: {Math.floor(todaySeconds / 60)} dk / {dailyGoalMinutes} dk (
-          {todayProgressPercent}%)
+          {t("today")}: {Math.floor(todaySeconds / 60)} {t("minutes")} /{" "}
+          {dailyGoalMinutes} {t("minutes")} ({todayProgressPercent}%)
         </Text>
         <View style={styles.progressContainer}>
           <View
@@ -110,8 +114,8 @@ export default function StatsScreen() {
       </View>
 
       <View style={styles.buttonRow}>
-        <CustomButton name="Günlük" onPress={() => setMode("daily")} />
-        <CustomButton name="Haftalık" onPress={() => setMode("weekly")} />
+        <CustomButton name={t("daily")} onPress={() => setMode("daily")} />
+        <CustomButton name={t("weekly")} onPress={() => setMode("weekly")} />
       </View>
 
       <LineChart
@@ -141,7 +145,7 @@ export default function StatsScreen() {
       )}
 
       <CustomButton
-        name="CSV Dışa Aktar"
+         name={t("export_csv")}
         onPress={() => exportWorkLogAsCSV(workLog)}
       />
     </View>

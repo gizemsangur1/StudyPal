@@ -2,6 +2,7 @@ import CustomButton from "@/components/CustomButton";
 import { useTasks } from "@/context/TaskContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FlatList,
   StyleSheet,
@@ -15,6 +16,7 @@ export default function TasksScreen() {
   const { tasks, addTask, toggleTask } = useTasks();
   const [input, setInput] = useState("");
   const { theme } = useTheme();
+    const { t } = useTranslation();
   const handleAdd = () => {
     if (input.trim() === "") return;
     addTask(input);
@@ -30,7 +32,7 @@ export default function TasksScreen() {
           fontSize: 16,
         }}
       >
-        Görevlerim
+      {t("tasks_title")}
       </Text>
 
       <TextInput
@@ -42,12 +44,12 @@ export default function TasksScreen() {
           borderRadius: 8,
           marginBottom: 8,
         }}
-        placeholder="Yeni görev ekle..."
+        placeholder={t("task_input_placeholder")}
         value={input}
         onChangeText={setInput}
         onSubmitEditing={handleAdd}
       />
-      <CustomButton name="Ekle" onPress={handleAdd} />
+      <CustomButton name={t("add_button")} onPress={handleAdd} />
 
       <FlatList
         data={tasks}
@@ -59,7 +61,7 @@ export default function TasksScreen() {
             </Text>
           </TouchableOpacity>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>Henüz görev yok</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>{t("no_tasks_text")}</Text>}
       />
     </View>
   );

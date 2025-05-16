@@ -1,5 +1,6 @@
 import CustomButton from "@/components/CustomButton";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 import { useTimer } from "../../context/TimerContext";
 
@@ -22,27 +23,28 @@ export default function TimerScreen() {
     switchMode,
   } = useTimer();
   const { theme } = useTheme();
+  const { t } = useTranslation();
   return (
     <View style={{ backgroundColor: theme.background, padding: 8 ,flex: 1, justifyContent: "center", alignItems: "center"}}>
-      <Text style={{color:theme.text, fontSize: 64, fontWeight: "bold", marginBottom: 20}}>{mode.toUpperCase()}</Text>
+      <Text style={{color:theme.text, fontSize: 64, fontWeight: "bold", marginBottom: 20}}> {t(`mode.${mode}`)}</Text>
       <Text style={{color:theme.text,fontSize: 24, marginBottom: 10}}>{formatTime(timeLeft)}</Text>
 
       <View style={styles.buttonGroup}>
         <CustomButton
-          name={isRunning ? "Durdur" : "Başlat"}
+         name={isRunning ? t("pause") : t("start")}
           onPress={isRunning ? pauseTimer : startTimer}
         />
-        <CustomButton name="Sıfırla" onPress={resetTimer} />
+        <CustomButton name={t("reset")} onPress={resetTimer} />
       </View>
 
       <View style={styles.buttonGroup}>
-        <CustomButton name="Çalışma Modu" onPress={() => switchMode("work")} />
+        <CustomButton name={t("work_mode")} onPress={() => switchMode("work")} />
         <CustomButton
-          name="Kısa Mola"
+           name={t("short_break")}
           onPress={() => switchMode("shortBreak")}
         />
         <CustomButton
-          name="Uzun Mola"
+          name={t("long_break")}
           onPress={() => switchMode("longBreak")}
         />
       </View>

@@ -1,12 +1,14 @@
 import { useTheme } from "@/context/ThemeContext";
 import { useTimer } from "@/context/TimerContext";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function StreakCard() {
   const { theme, themeName } = useTheme();
   const { workLog } = useTimer();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const streak = calculateStreak(workLog);
 
@@ -15,7 +17,7 @@ export default function StreakCard() {
       style={[
         styles.container,
         {
-          backgroundColor: themeName === "dark" ? "#3b3b3b" : "#fef3c7",
+          backgroundColor: themeName === "dark" ? "#94B4C1" : "#ECEFCA",
         },
       ]}
       onPress={() => router.push("/stats")}
@@ -23,7 +25,7 @@ export default function StreakCard() {
     >
       <Text style={styles.icon}>🔥</Text>
       <Text style={[styles.text, { color: theme.text }]}>
-        {streak} günlük streak
+         {t("streak_message", { count: streak })}
       </Text>
     </TouchableOpacity>
   );
