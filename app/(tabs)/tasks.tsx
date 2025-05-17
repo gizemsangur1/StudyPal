@@ -38,7 +38,9 @@ export default function TasksScreen() {
   async function scheduleTaskNotification(title: string, dueDate: Date) {
     try {
       const threeHoursBefore = new Date(dueDate.getTime() - 3 * 60 * 60 * 1000);
-      const secondsUntil = Math.floor((threeHoursBefore.getTime() - Date.now()) / 1000);
+      const secondsUntil = Math.floor(
+        (threeHoursBefore.getTime() - Date.now()) / 1000
+      );
 
       if (secondsUntil <= 0) {
         console.log("⏰ Bildirim zamanı geçmiş. Planlama yapılmadı.");
@@ -50,7 +52,7 @@ export default function TasksScreen() {
           title: "⏰ Görev Yaklaşıyor!",
           body: `\"${title}\" görevine 3 saat kaldı.`,
         },
-         trigger: {
+        trigger: {
           type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
           seconds: secondsUntil,
           repeats: false,
@@ -82,7 +84,6 @@ export default function TasksScreen() {
         onSubmitEditing={handleAdd}
       />
 
-      {/* Tarih seçimi */}
       <TouchableOpacity onPress={() => setShowPicker(true)}>
         <Text style={{ color: theme.text, marginBottom: 8 }}>
           {dueDate ? dueDate.toLocaleDateString() : "📅 " + t("select_date")}
@@ -112,7 +113,13 @@ export default function TasksScreen() {
       {/* Saat seçimi */}
       <TouchableOpacity onPress={() => setShowTimePicker(true)}>
         <Text style={{ color: theme.text, marginBottom: 8 }}>
-          🕒 {dueDate ? dueDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : t("select_time")}
+          🕒{" "}
+          {dueDate
+            ? dueDate.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : t("select_time")}
         </Text>
       </TouchableOpacity>
 
@@ -153,7 +160,19 @@ export default function TasksScreen() {
                   { color: theme.text },
                 ]}
               >
-                {item.title} {item.dueDate}
+                {item.title}{" "}
+                {item.dueDate &&
+                  (() => {
+                    const date = new Date(item.dueDate);
+                    return `${date.getFullYear()}-${String(
+                      date.getMonth() + 1
+                    ).padStart(2, "0")}-${String(date.getDate()).padStart(
+                      2,
+                      "0"
+                    )} ${String(date.getHours()).padStart(2, "0")}:${String(
+                      date.getMinutes()
+                    ).padStart(2, "0")}`;
+                  })()}
               </Text>
             </TouchableOpacity>
 

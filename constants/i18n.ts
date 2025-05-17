@@ -42,6 +42,13 @@ const resources = {
         longBreak: "Uzun Mola",
       },
       "ai_generate_plan": "AI ile Günlük Planla",
+      select_date:"Tarih Seç",
+      select_time:"Zaman Seç",
+      login:"Giriş Yap",
+      register:"Kayıt Ol",
+      haveaccount:"Zaten hesabın var mı?",
+      notaccount:"Hesabın yok mu?",
+      logout:"Çıkış Yap",
     },
   },
   en: {
@@ -80,7 +87,14 @@ const resources = {
         shortBreak: "Short Break",
         longBreak: "Long Break",
       },
-       "ai_generate_plan": "Generate Plan with AI"
+       "ai_generate_plan": "Generate Plan with AI",
+       select_date:"Select Date",
+       select_time:"Select Time",
+       login:"Login",
+       register:"Register",
+       haveaccount:"Already have an account?",
+       notaccount:"Don't have an account?",
+       logout:"Logout"
     },
   },
 };

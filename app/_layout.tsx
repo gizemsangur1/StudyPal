@@ -1,7 +1,8 @@
 import "@/constants/i18n";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { useNotificationSetup } from "@/context/NotificationProvider";
-import { Ionicons } from '@expo/vector-icons';
-import { Stack, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, usePathname, useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import { TaskProvider } from "../context/TaskContext";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
@@ -11,13 +12,15 @@ export default function RootLayout() {
   useNotificationSetup();
 
   return (
-    <ThemeProvider>
-      <TimerProvider>
-        <TaskProvider>
-          <LayoutWithTheme />
-        </TaskProvider>
-      </TimerProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <TimerProvider>
+          <TaskProvider>
+            <LayoutWithTheme />
+          </TaskProvider>
+        </TimerProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
@@ -44,12 +47,26 @@ function LayoutWithTheme() {
 }
 
 function ThemeToggleButtons() {
-  const { theme,themeName, setThemeName } = useTheme();
+  const { theme, themeName, setThemeName } = useTheme();
   const isLight = themeName === "light";
   const router = useRouter();
+  const pathname = usePathname();
+   const { user } = useAuth();
+
+  if (
+    !user ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register")
+  ) {
+    return null;
+  }
+
   return (
-      <TouchableOpacity onPress={() => router.push("/settings")} style={{padding:15}}>
-        <Ionicons name="settings-outline" size={24} color={theme.text} />
-      </TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => router.push("/settings")}
+      style={{ padding: 15 }}
+    >
+      <Ionicons name="settings-outline" size={24} color={theme.text} />
+    </TouchableOpacity>
   );
 }

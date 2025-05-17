@@ -1,13 +1,19 @@
 import CustomButton from "@/components/CustomButton";
 import StreakCard from "@/components/StreakCards";
+import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+import { Redirect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { user } = useAuth();
 
+  if (!user) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
