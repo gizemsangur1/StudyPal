@@ -1,87 +1,72 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-const STORAGE_KEY = '@studypal_tasks';
-
-export interface Task {
+export type Task = {
   id: string;
   title: string;
+  dueDate: Date | null;
   completed: boolean;
-  dueDate?: string; 
-}
+};
 
-interface TaskContextProps {
+type TaskContextType = {
   tasks: Task[];
-  addTask: (title: string, dueDate?: Date | null) => string;
+  addTask: (
+    title: string,
+    dueDate?: Date | null,
+    id?: string,
+    completed?: boolean
+  ) => string;
   toggleTask: (id: string) => void;
   deleteTask: (id: string) => void;
-}
+  clearTasks: () => void;
+};
 
-const TaskContext = createContext<TaskContextProps | undefined>(undefined);
+const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
-export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
+export const TaskProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  useEffect(() => {
-    const loadTasks = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          setTasks(JSON.parse(stored));
-        }
-      } catch (err) {
-        console.error('Görevler yüklenemedi:', err);
-      }
-    };
-
-    loadTasks();
-  }, []);
-
-  useEffect(() => {
-    const saveTasks = async () => {
-      try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-      } catch (err) {
-        console.error('Görevler kaydedilemedi:', err);
-      }
-    };
-
-    saveTasks();
-  }, [tasks]);
-
-  const addTask = (title: string, dueDate?: Date | null): string => {
-    const id = Date.now().toString();
-    const newTask: Task = {
-      id,
-      title,
-      completed: false,
-      dueDate: dueDate ? dueDate.toISOString() : undefined,
-    };
-    setTasks((prev) => [newTask, ...prev]);
-    return id;
+  const addTask = (
+    title: string,
+    dueDate: Date | null = null,
+    id: string = uuidv4(),
+    completed: boolean = false
+  ): string => {
+    const newTask: Task = { id, title, dueDate, completed };
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+    return newTask.id;
   };
 
   const toggleTask = (id: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
   };
 
   const deleteTask = (id: string) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  };
+
+  const clearTasks = () => {
+    setTasks([]);
   };
 
   return (
-    <TaskContext.Provider value={{ tasks, addTask, toggleTask, deleteTask }}>
+    <TaskContext.Provider
+      value={{ tasks, addTask, toggleTask, deleteTask, clearTasks }}
+    >
       {children}
     </TaskContext.Provider>
   );
 };
 
-export const useTasks = () => {
+export const useTasks = (): TaskContextType => {
   const context = useContext(TaskContext);
-  if (!context) throw new Error('useTasks must be used within a TaskProvider');
+  if (!context) {
+    throw new Error("useTasks must be used within a TaskProvider");
+  }
   return context;
 };
+

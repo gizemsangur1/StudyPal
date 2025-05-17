@@ -1,10 +1,15 @@
+import {
+  addTaskToCloud,
+  deleteTaskFromCloud,
+  getTasksFromCloud,
+} from "@/actions/tasks";
 import CustomButton from "@/components/CustomButton";
 import { useTasks } from "@/context/TaskContext";
 import { useTheme } from "@/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Notifications from "expo-notifications";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -17,7 +22,7 @@ import {
 } from "react-native";
 
 export default function TasksScreen() {
-  const { tasks, addTask, toggleTask, deleteTask } = useTasks();
+  const { tasks, addTask, toggleTask, deleteTask, clearTasks } = useTasks();
   const [input, setInput] = useState("");
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [showPicker, setShowPicker] = useState(false);
@@ -25,9 +30,27 @@ export default function TasksScreen() {
   const { theme, themeName } = useTheme();
   const { t } = useTranslation();
 
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  const loadTasks = async () => {
+    try {
+      clearTasks();
+      const cloudTasks = await getTasksFromCloud();
+      cloudTasks.forEach((task) => {
+        const parsedDate = task.dueDate ? new Date(task.dueDate) : null;
+        addTask(task.title, parsedDate, task.id, task.completed);
+      });
+    } catch (err) {
+      console.log("Görevler yüklenemedi:", err);
+    }
+  };
+
   const handleAdd = async () => {
     if (input.trim() === "") return;
     const taskId = addTask(input, dueDate);
+    await addTaskToCloud(input, dueDate);
     if (dueDate) {
       await scheduleTaskNotification(input, dueDate);
     }
@@ -86,7 +109,9 @@ export default function TasksScreen() {
 
       <TouchableOpacity onPress={() => setShowPicker(true)}>
         <Text style={{ color: theme.text, marginBottom: 8 }}>
-          {dueDate ? dueDate.toLocaleDateString() : "📅 " + t("select_date")}
+          {dueDate
+            ? dueDate.toLocaleDateString()
+            : t("select_date")}
         </Text>
       </TouchableOpacity>
 
@@ -110,10 +135,8 @@ export default function TasksScreen() {
         />
       )}
 
-      {/* Saat seçimi */}
       <TouchableOpacity onPress={() => setShowTimePicker(true)}>
         <Text style={{ color: theme.text, marginBottom: 8 }}>
-          🕒{" "}
           {dueDate
             ? dueDate.toLocaleTimeString([], {
                 hour: "2-digit",
@@ -176,7 +199,12 @@ export default function TasksScreen() {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => deleteTask(item.id)}>
+            <TouchableOpacity
+              onPress={async () => {
+                deleteTask(item.id);
+                await deleteTaskFromCloud(item.id);
+              }}
+            >
               <Ionicons
                 name="trash-outline"
                 size={20}
@@ -194,15 +222,6 @@ export default function TasksScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, flex: 1 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 16 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
   taskRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -224,7 +243,6 @@ const styles = StyleSheet.create({
     color: "gray",
   },
 });
-
 /*  trigger: {
           type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
           seconds: secondsUntil,
